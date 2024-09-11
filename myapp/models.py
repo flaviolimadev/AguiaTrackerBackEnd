@@ -49,6 +49,9 @@ class Monitorado(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        db_table = 'monitorados'  # Define explicitamente o nome da tabela
+
     def __str__(self):
         return self.nome
 
