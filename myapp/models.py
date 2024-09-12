@@ -40,12 +40,48 @@ class Job(models.Model):
     def __str__(self):
         return f'Job {self.id} in queue {self.queue}'
 
+
 class Monitorado(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=255)
-    cpf = models.CharField(max_length=14, unique=True)
+    key_monitorado = models.CharField(max_length=255)
+    matricula_monitorado = models.CharField(max_length=255)
+    nome_monitorado = models.CharField(max_length=255)
+    dispositivo = models.CharField(max_length=255)
+    agencia_id = models.IntegerField()
+    estabelecimento_prisional_id = models.IntegerField(default=0)
+    monitorado_vitima = models.IntegerField(default=0)
+    perfil_id = models.IntegerField()
+    nome_completo = models.CharField(max_length=255)
+    nome_social = models.CharField(max_length=255, null=True, blank=True)
+    apelido = models.CharField(max_length=255, null=True, blank=True)
+    nome_mae = models.CharField(max_length=255)
+    nome_pai = models.CharField(max_length=255, null=True, blank=True)
+    genero = models.CharField(max_length=255)
+    cpf = models.CharField(max_length=11)
+    rg = models.CharField(max_length=255, null=True, blank=True)
     data_nascimento = models.DateField()
-    status = models.CharField(max_length=100)
+    protocolo_monitoramento = models.CharField(max_length=255)
+    regime_id = models.IntegerField(default=0)
+    controle_prazo = models.CharField(max_length=255, default='0')
+    inicio_medida = models.DateField()
+    dias_medida = models.IntegerField()
+    prorrogacao = models.IntegerField(null=True, blank=True)
+    tipo_monitorado_id = models.IntegerField(default=0)
+    periculosidade = models.IntegerField(default=0)
+    faccao_id = models.IntegerField(null=True, blank=True)
+    religiao = models.CharField(max_length=255, null=True, blank=True)
+    estado_civil = models.CharField(max_length=255, null=True, blank=True)
+    situacao_trabalhista_id = models.IntegerField(default=0)
+    escolaridade_id = models.IntegerField(default=0)
+    fotos = models.TextField(null=True, blank=True)
+    arquivos = models.TextField(null=True, blank=True)
+    telefones = models.TextField(null=True, blank=True)
+    zonas = models.TextField(null=True, blank=True)
+    processos = models.TextField(null=True, blank=True)
+    agendamento_servicos = models.TextField(null=True, blank=True)
+    comandos_dispositivo = models.TextField(null=True, blank=True)
+    notificacoes_observacoes = models.TextField(null=True, blank=True)
+    historico_posicoes = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -57,12 +93,16 @@ class Monitorado(models.Model):
 
 class Dispositivo(models.Model):
     id = models.BigAutoField(primary_key=True)
-    tipo = models.CharField(max_length=100)
-    modelo = models.CharField(max_length=100)
-    numero_serie = models.CharField(max_length=100, unique=True)
-    monitorado = models.ForeignKey('Monitorado', on_delete=models.CASCADE)
+    num_serie = models.CharField(max_length=255)
+    versao_firmware = models.CharField(max_length=255)
+    status = models.IntegerField(default=0)
+    sim_card_01 = models.CharField(max_length=255)
+    sim_card_02 = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'dispositivos'
 
     def __str__(self):
         return f'{self.tipo} - {self.modelo}'
@@ -70,10 +110,14 @@ class Dispositivo(models.Model):
 
 class Foto(models.Model):
     id = models.BigAutoField(primary_key=True)
-    monitorado = models.ForeignKey('Monitorado', on_delete=models.CASCADE)
-    caminho = models.CharField(max_length=255)
-    descricao = models.TextField(null=True, blank=True)
+    foto = models.TextField()  # Armazena longtext
+    principal = models.IntegerField(default=0)  # Indica se é a foto principal
+    operador_registro = models.IntegerField(default=0)  # ID do operador que registrou
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'fotos'
 
     def __str__(self):
         return f'Foto de {self.monitorado.nome}'
@@ -81,10 +125,15 @@ class Foto(models.Model):
 
 class Arquivo(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=255)
-    caminho = models.CharField(max_length=255)
-    tamanho = models.BigIntegerField()
+    tipo_arquivo = models.CharField(max_length=255)
+    formato_arquivo = models.CharField(max_length=255)
+    arquivo = models.TextField()  # Armazena o arquivo em formato de texto longo
+    operador_registro = models.IntegerField(default=0)  # ID do operador que registrou
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'arquivos'
 
     def __str__(self):
         return self.nome
@@ -92,22 +141,35 @@ class Arquivo(models.Model):
 
 class Telefone(models.Model):
     id = models.BigAutoField(primary_key=True)
-    numero = models.CharField(max_length=15, unique=True)
-    monitorado = models.ForeignKey('Monitorado', on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=100, null=True, blank=True)
+    numero = models.CharField(max_length=255)
+    whatsapp = models.IntegerField(default=0)  # Indica se o número é WhatsApp
+    tipo_contato = models.CharField(max_length=255)  # Tipo de contato, ex: pessoal, trabalho
+    operador_registro = models.IntegerField(default=0)  # ID do operador que registrou
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'telefones'
 
     def __str__(self):
-        return self.numero
+        return self.id
 
 
 class Processo(models.Model):
     id = models.BigAutoField(primary_key=True)
-    numero_processo = models.CharField(max_length=50, unique=True)
-    monitorado = models.ForeignKey('Monitorado', on_delete=models.CASCADE)
-    descricao = models.TextField()
-    status = models.CharField(max_length=100)
+    num_processo = models.IntegerField(default=0)
+    estado = models.CharField(max_length=255)
+    municipio = models.CharField(max_length=255)
+    vara = models.IntegerField()
+    magistrado = models.CharField(max_length=255, null=True, blank=True)
+    resumo_sentenca = models.CharField(max_length=255, null=True, blank=True)
+    ativo = models.IntegerField(default=0)
+    principal = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'processos'
 
     def __str__(self):
         return self.numero_processo
@@ -115,11 +177,13 @@ class Processo(models.Model):
 
 class Estabelecimento(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=255)
-    endereco = models.CharField(max_length=255)
-    telefone = models.CharField(max_length=15)
-    tipo = models.CharField(max_length=100)
+    nome_do_estabelecimento = models.CharField(max_length=255)
+    local_do_estabelecimento_prisional = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'estabelecimentos'
 
     def __str__(self):
         return self.nome
@@ -127,9 +191,12 @@ class Estabelecimento(models.Model):
 
 class Perfil(models.Model):
     id = models.BigAutoField(primary_key=True)
-    usuario = models.ForeignKey('User', on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=100)
-    descricao = models.TextField()
+    tipo_de_perfil = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'perfils'
 
     def __str__(self):
         return f'Perfil de {self.usuario.name}'
@@ -137,9 +204,12 @@ class Perfil(models.Model):
 
 class RegraCumprimentoPena(models.Model):
     id = models.BigAutoField(primary_key=True)
-    descricao = models.TextField()
-    status = models.CharField(max_length=100)
+    tipo_regime = models.TextField()  # Armazena longtext para o tipo de regime
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'regras_cumprimento_penas'
 
     def __str__(self):
         return f'Regra {self.id} - {self.status}'
@@ -147,10 +217,13 @@ class RegraCumprimentoPena(models.Model):
 
 class Faccao(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=255)
-    descricao = models.TextField(null=True, blank=True)
-    data_fundacao = models.DateField()
+    nome_faccao = models.CharField(max_length=255)
+    local_faccao = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'faccaos'
 
     def __str__(self):
         return self.nome
@@ -158,10 +231,19 @@ class Faccao(models.Model):
 
 class SituacaoTrabalhista(models.Model):
     id = models.BigAutoField(primary_key=True)
-    descricao = models.TextField()
-    monitorado = models.ForeignKey('Monitorado', on_delete=models.CASCADE)
-    status = models.CharField(max_length=100)
+    nome_empresa = models.CharField(max_length=255)
+    cargo_empresa = models.CharField(max_length=255)
+    inicio_da_jornada_trabalho = models.DateTimeField()
+    termino_da_jornada_trabalho = models.DateTimeField()
+    inicio_do_contrato_trabalho = models.DateTimeField()
+    termino_do_contrato_trabalho = models.DateTimeField()
+    contato_empresa = models.CharField(max_length=255)
+    responsavel = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'situação_trabalhistas'
 
     def __str__(self):
         return f'Situação de {self.monitorado.nome}'
@@ -169,9 +251,23 @@ class SituacaoTrabalhista(models.Model):
 
 class Zona(models.Model):
     id = models.BigAutoField(primary_key=True)
-    nome = models.CharField(max_length=255)
-    descricao = models.TextField(null=True, blank=True)
+    tipo_zona = models.CharField(max_length=255)
+    regras_zona = models.CharField(max_length=255)
+    endereco_zona = models.CharField(max_length=255)
+    observacoes = models.CharField(max_length=255)
+    vigencia_inicial_da_zona = models.DateTimeField()
+    vigencia_final_da_zona = models.DateTimeField(null=True, blank=True)
+    tipo_area = models.CharField(max_length=255)
+    regras_horario = models.CharField(max_length=255, null=True, blank=True)
+    operador_registro = models.CharField(max_length=255)
+    operador_edit_registro = models.IntegerField(default=1)
+    ativa = models.IntegerField()
+    horario_zona = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'zonas'
 
     def __str__(self):
         return self.nome
@@ -179,9 +275,25 @@ class Zona(models.Model):
 
 class TrackingData(models.Model):
     id = models.BigAutoField(primary_key=True)
-    dispositivo = models.ForeignKey('Dispositivo', on_delete=models.CASCADE)
-    localizacao = models.CharField(max_length=255)
-    data_registro = models.DateTimeField()
+    coordenadas_geograficas = models.CharField(max_length=255)
+    LBS = models.CharField(max_length=255)
+    status_feixe_luz = models.CharField(max_length=255)
+    deteccao_de_jamming = models.CharField(max_length=255)
+    deteccao_de_violacao_de_caixa = models.CharField(max_length=255)
+    altura = models.CharField(max_length=255)
+    velocidade = models.CharField(max_length=255)
+    VDOP = models.CharField(max_length=255)
+    HDOP = models.CharField(max_length=255)
+    qualidade_satelite = models.CharField(max_length=255)
+    nivel_bateria = models.CharField(max_length=255)
+    e_sim_card = models.CharField(max_length=255)
+    inercia = models.CharField(max_length=255)
+    qualidade_GPRS = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'traking_data'
 
     def __str__(self):
         return f'Tracking de {self.dispositivo.tipo} em {self.data_registro}'
