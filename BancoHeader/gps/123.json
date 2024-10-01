@@ -1,0 +1,48 @@
+{
+    "ID": "123",
+    "VIOLACAO_CINTA": true,
+    "VIOLACAO_TRAVA_SEGURANCA": true,
+    "VIOLACAO_CASE": true,
+    "ACELEROMETRO": true,
+    "GPS": {
+        "G": 0,
+        "B": 0,
+        "S": 0
+    },
+    "BATERIA": 10,
+    "R": false,
+    "G": false,
+    "B": false,
+    "VIBRACAO": false,
+    "BUZZER": false,
+    "PERSEGUICAO": false,
+    "EVENTOS": {
+        "01": {
+            "VIOLACAO_CINTA": {
+                "R": true,
+                "G": false,
+                "B": false,
+                "VIBRACAO": true,
+                "BUZZER": true
+            }
+        },
+        "02": {
+            "VIOLACAO_TRAVA_SEGURANCA": {
+                "R": true,
+                "G": false,
+                "B": false,
+                "VIBRACAO": true,
+                "BUZZER": true
+            }
+        },
+        "03": {
+            "VIOLACAO_CASE": {
+                "R": true,
+                "G": false,
+                "B": false,
+                "VIBRACAO": true,
+                "BUZZER": true
+            }
+        }
+    }
+}

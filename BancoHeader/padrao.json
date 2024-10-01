@@ -1,0 +1,11 @@
+{
+    "header_base": {
+        "time": 1000,
+        "padrao": "ID;COORDENADAS;BATERIA;GPS;DATE"
+    },
+
+    "header_evento": {
+        "time": "EVENTOS",
+        "padrao": "ID;COORDENADAS;EVENTO;DATE:VARIAVEIS"
+    }
+}
